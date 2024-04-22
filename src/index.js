@@ -1,5 +1,6 @@
 
-import {
+import
+{
   Scene,
   WebGLRenderer,
   PerspectiveCamera,
@@ -36,8 +37,10 @@ import { InstancedUniformsMesh } from 'three-instanced-uniforms-mesh'
 import { Pane } from 'tweakpane'
 import { gsap } from 'gsap'
 
-class App {
-  constructor(container) {
+class App
+{
+  constructor(container)
+  {
     this.container = document.querySelector(container)
 
     this.config = {
@@ -46,8 +49,8 @@ class App {
       cameraRadius: 4.5,
       particlesSpeed: 0,
       particlesCount: 3000,
-      bloomStrength: 1.45,
-      bloomThreshold: 0.34,
+      bloomStrength: 1.23,
+      bloomThreshold: 0.04,
       bloomRadius: 0.5
     }
 
@@ -56,7 +59,8 @@ class App {
     this._resizeCb = () => this._onResize()
   }
 
-  init() {
+  init()
+  {
     this._createScene()
     this._createCamera()
     this._createRenderer()
@@ -72,16 +76,19 @@ class App {
     this._createControls()
     this._createDebugPanel()
 
-    this.renderer.setAnimationLoop(() => {
+    this.renderer.setAnimationLoop(() =>
+    {
       this._update()
       this._render()
     })
 
     const audioBtn = document.querySelector('#audio-btn')
     audioBtn
-      .addEventListener('click', () => {
+      .addEventListener('click', () =>
+      {
         const tl = new gsap.timeline({
-          onComplete: () => {
+          onComplete: () =>
+          {
             this._loadMusic()
           }
         })
@@ -91,18 +98,20 @@ class App {
           .to('#audio-btn-label', { '--clip': 1, duration: 0.6 })
           .to('#audio-btn-icon', { rotation: 140, scale: 0.8, duration: 0.5 }, '<0.05')
           .to('#audio-btn-icon', { opacity: 0, duration: 0.65 }, '<')
-          .to(audioBtn, { width: 66, ease: 'back.inOut(2)', duration: 0.9}, '<0.2')
+          .to(audioBtn, { width: 66, ease: 'back.inOut(2)', duration: 0.9 }, '<0.2')
       }, { once: true })
 
     console.log(this)
   }
 
-  destroy() {
+  destroy()
+  {
     this.renderer.dispose()
     this._removeListeners()
   }
 
-  _update() {
+  _update()
+  {
     const elapsed = this.clock.getElapsedTime()
 
     this.mainGroup.rotation.y += 0.002
@@ -113,11 +122,12 @@ class App {
     this.bigSphere.rotation.z -= 0.003
     this.bigSphere.rotation.y -= 0.001
 
-    this.particles.material.uniforms.uTime.value += 0.05*this.config.particlesSpeed
+    this.particles.material.uniforms.uTime.value += 0.05 * this.config.particlesSpeed
 
     this.bigSphere.material.uniforms.uTime.value = elapsed
 
-    if (!!this.analyser) {
+    if (!!this.analyser)
+    {
       const d = this.analyser.getFrequencyData()
 
       const o = d.reduce((prev, curr) => prev + curr, 0)
@@ -127,27 +137,31 @@ class App {
       this.icosahedron.scale.setScalar(1 - o / d.length * 0.006)
 
       this.tick += 0.01
-      this.camera.position.x = Math.sin(this.tick*0.63)*2.7*this.config.cameraSpeed
-      this.camera.position.y = Math.sin(this.tick*0.84)*2.15*this.config.cameraSpeed
-      this.camera.position.z = Math.cos(this.tick*0.39)*this.config.cameraRadius*this.config.cameraSpeed
+      this.camera.position.x = Math.sin(this.tick * 0.63) * 2.7 * this.config.cameraSpeed
+      this.camera.position.y = Math.sin(this.tick * 0.84) * 2.15 * this.config.cameraSpeed
+      this.camera.position.z = Math.cos(this.tick * 0.39) * this.config.cameraRadius * this.config.cameraSpeed
       this.camera.lookAt(this.scene.position)
     }
   }
 
-  _render() {
+  _render()
+  {
     this.composer.render()
   }
 
-  _createScene() {
+  _createScene()
+  {
     this.scene = new Scene()
   }
 
-  _createCamera() {
+  _createCamera()
+  {
     this.camera = new PerspectiveCamera(75, this.container.clientWidth / this.container.clientHeight, 0.1, 100)
     this.camera.position.set(0, 0, this.config.cameraRadius)
   }
 
-  _createRenderer() {
+  _createRenderer()
+  {
     this.renderer = new WebGLRenderer({
       alpha: true,
       antialias: true
@@ -160,7 +174,8 @@ class App {
     this.renderer.setClearColor(this.config.backgroundColor)
   }
 
-  _createPostprocess() {
+  _createPostprocess()
+  {
     this.renderPass = new RenderPass(this.scene, this.camera)
 
     const resolution = new Vector2(this.container.clientWidth, this.container.clientHeight)
@@ -179,17 +194,20 @@ class App {
     this.composer.addPass(this.bloomPass)
   }
 
-  _createControls() {
+  _createControls()
+  {
     if (process.env.NODE_ENV === 'production') return
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
   }
 
-  _createMainGroup() {
+  _createMainGroup()
+  {
     this.mainGroup = new Group()
     this.scene.add(this.mainGroup)
   }
 
-  _createSphere() {
+  _createSphere()
+  {
     const geom = new SphereGeometry(2, 32, 16)
 
     const mat = new MeshBasicMaterial({
@@ -202,7 +220,8 @@ class App {
     this.sphere = new Mesh(geom, mat)
   }
 
-  _createBigSphere() {
+  _createBigSphere()
+  {
     const material = new ShaderMaterial({
       fragmentShader: require('./shaders/background.fragment.glsl'),
       vertexShader: require('./shaders/background.vertex.glsl'),
@@ -222,11 +241,13 @@ class App {
     this.scene.add(this.bigSphere)
   }
 
-  _createSampler() {
+  _createSampler()
+  {
     this.sampler = new MeshSurfaceSampler(this.sphere).build()
   }
 
-  _createParticles() {
+  _createParticles()
+  {
     const geom = new SphereGeometry(0.01, 16, 16)
 
     const material = new ShaderMaterial({
@@ -250,10 +271,11 @@ class App {
 
     const directions = []
 
-    for (let i = 0; i < this.config.particlesCount; i++) {
+    for (let i = 0; i < this.config.particlesCount; i++)
+    {
       this.sampler.sample(tempPosition)
       tempObject.position.copy(tempPosition)
-      tempObject.scale.setScalar(0.5 + Math.random()*0.5)
+      tempObject.scale.setScalar(0.5 + Math.random() * 0.5)
       tempObject.updateMatrix()
       this.particles.setMatrixAt(i, tempObject.matrix)
 
@@ -270,7 +292,8 @@ class App {
     this.mainGroup.add(this.particles)
   }
 
-  _createIcosahedron() {
+  _createIcosahedron()
+  {
     const geom = new IcosahedronGeometry(1.2, 0)
     const mat = new MeshBasicMaterial({
       color: 0xffffff,
@@ -284,7 +307,8 @@ class App {
     this.mainGroup.add(this.icosahedron)
   }
 
-  _createDebugPanel() {
+  _createDebugPanel()
+  {
     this.pane = new Pane()
 
     /**
@@ -318,8 +342,10 @@ class App {
     afterimageFolder.addInput(this.afterimagePass.uniforms.damp, 'value', { label: 'Damp', min: 0, max: 1 })
   }
 
-  _loadMusic() {
-    return new Promise(resolve => {
+  _loadMusic()
+  {
+    return new Promise(resolve =>
+    {
       const listener = new AudioListener()
       this.camera.add(listener)
 
@@ -328,9 +354,11 @@ class App {
 
       const loader = new AudioLoader()
 
-      loader.load('/music.mp3', buffer => {
+      loader.load('/rap.mp3', buffer =>
+      {
         const tl = new gsap.timeline({
-          onComplete: () => {
+          onComplete: () =>
+          {
             this.music.setBuffer(buffer)
             this.music.setLoop(true)
             this.music.setVolume(0.1)
@@ -357,7 +385,8 @@ class App {
             cameraSpeed: 1,
             duration: 1.3
           }, 'start')
-      }, progress => {
+      }, progress =>
+      {
         gsap.to('#audio-btn-loader', {
           '--scale': () => progress.loaded / progress.total,
           duration: 0.15,
@@ -368,19 +397,23 @@ class App {
     })
   }
 
-  _createClock() {
+  _createClock()
+  {
     this.clock = new Clock()
   }
 
-  _addListeners() {
+  _addListeners()
+  {
     window.addEventListener('resize', this._resizeCb, { passive: true })
   }
 
-  _removeListeners() {
+  _removeListeners()
+  {
     window.removeEventListener('resize', this._resizeCb, { passive: true })
   }
 
-  _onResize() {
+  _onResize()
+  {
     this.camera.aspect = this.container.clientWidth / this.container.clientHeight
     this.camera.updateProjectionMatrix()
 
